@@ -55,8 +55,8 @@ INSERT INTO bank.address(city_id,street,number,postal_code) VALUES(
   
 INSERT INTO bank.bank(name,address_id) VALUES('BCR',1);
 
-INSERT INTO bank.customer(name,address_id) VALUES('Popescu',2);
-INSERT INTO bank.customer(name,address_id) VALUES('Ionescu',3);
+INSERT INTO bank.customer(name,address_id,sex) VALUES('Popescu',2,'M');
+INSERT INTO bank.customer(name,address_id,sex) VALUES('Ionescu Ana',3,'F');
 
 INSERT INTO bank.account(iban,bank_id,customer_id,amount,account_type,currency_id) VALUES('RNCB0101010101101', 1, 1, 100.50, 'DEBIT', 1);
 INSERT INTO bank.account(iban,bank_id,customer_id,amount,account_type,currency_id) VALUES('RNCB020202020202', 1, 1, 11, 'SAVINGS', 2);

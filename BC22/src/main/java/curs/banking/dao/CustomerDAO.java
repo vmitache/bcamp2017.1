@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -98,18 +99,58 @@ public class CustomerDAO implements BasicDAO<Customer> {
 
   @Override
   public Customer insert(Customer pEntity) {
-    return null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    try {
+      stmt = mConnection.prepareStatement("INSERT INTO BANK.CUSTOMER(NAME,SSN,ADDRESS_ID,AGE,SEX) VALUES(?,?,?,?,?)",
+          Statement.RETURN_GENERATED_KEYS);
+      stmt.setString(1, pEntity.getName());
+      stmt.setString(2, pEntity.getSSN());
+      stmt.setLong(3, pEntity.getAddress().getId());
+      stmt.setInt(4, pEntity.getVarsta());
+      stmt.setString(5, pEntity.getSex().name());
+      stmt.executeUpdate();
+      rs = stmt.getGeneratedKeys();
+      if (rs.next()) {
+        long id = rs.getLong(1);
+        return findById(id);
+      } else {
+        throw new DAOException("Id not found in insert");
+      }
+    } catch (SQLException e) {
+      throw new DAOException(e);
+    } finally {
+      SQLUtils.closeQuietly(rs, stmt);
+
+    }
   }
 
   @Override
   public Customer update(Customer pEntity) {
-    // TODO Auto-generated method stub
-    return null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    try {
+      stmt = mConnection.prepareStatement("UPDATE BANK.CUSTOMER SET NAME=?,SSN=?,ADDRESS_ID=?,AGE=?,SEX=? WHERE ID=?");
+      stmt.setString(1, pEntity.getName());
+      stmt.setString(2, pEntity.getSSN());
+      stmt.setLong(3, pEntity.getAddress().getId());
+      stmt.setInt(4, pEntity.getVarsta());
+      stmt.setString(5, pEntity.getSex().name());
+      stmt.setLong(6, pEntity.getId());
+      stmt.executeUpdate();
+      return findById(pEntity.getId());
+    } catch (SQLException e) {
+      throw new DAOException(e);
+    } finally {
+      SQLUtils.closeQuietly(rs, stmt);
+
+    }
+
   }
 
   @Override
   public void delete(Customer pEntity) {
-    // TODO Auto-generated method stub
+    throw new DAOException("Not implemented!!!");
 
   }
 

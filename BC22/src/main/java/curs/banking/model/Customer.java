@@ -62,4 +62,54 @@ public class Customer {
         + mVarsta + ", mSex=" + mSex + "]";
   }
 
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    result = prime * result + ((mAddress == null) ? 0 : mAddress.hashCode());
+    result = prime * result + (int) (mId ^ (mId >>> 32));
+    result = prime * result + ((mName == null) ? 0 : mName.hashCode());
+    result = prime * result + ((mSSN == null) ? 0 : mSSN.hashCode());
+    result = prime * result + ((mSex == null) ? 0 : mSex.hashCode());
+    result = prime * result + ((mVarsta == null) ? 0 : mVarsta.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    Customer other = (Customer) obj;
+    if (mAddress == null) {
+      if (other.mAddress != null)
+        return false;
+    } else if (!mAddress.equals(other.mAddress))
+      return false;
+    if (mId != other.mId)
+      return false;
+    if (mName == null) {
+      if (other.mName != null)
+        return false;
+    } else if (!mName.equals(other.mName))
+      return false;
+    if (mSSN == null) {
+      if (other.mSSN != null)
+        return false;
+    } else if (!mSSN.equals(other.mSSN))
+      return false;
+    if (mSex != other.mSex)
+      return false;
+    if (mVarsta == null) {
+      if (other.mVarsta != null)
+        return false;
+    } else if (!mVarsta.equals(other.mVarsta))
+      return false;
+    return true;
+  }
+
+  
 }
