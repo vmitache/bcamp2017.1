@@ -11,7 +11,7 @@ public class Customer {
   public long getId() {
     return mId;
   }
-
+  
   public void setId(long pId) {
     mId = pId;
   }
