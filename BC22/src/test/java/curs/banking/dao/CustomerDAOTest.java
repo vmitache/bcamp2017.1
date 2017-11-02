@@ -1,3 +1,4 @@
+package curs.banking.dao;
 
 
 import static org.junit.Assert.*;
@@ -76,5 +77,7 @@ public class CustomerDAOTest {
   @Test
   public void testDelete() {
   }
+
+
 
 }

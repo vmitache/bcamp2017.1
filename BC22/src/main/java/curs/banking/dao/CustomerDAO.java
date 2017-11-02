@@ -53,7 +53,7 @@ public class CustomerDAO implements BasicDAO<Customer> {
       stmt.setLong(1, pId);
       rs = stmt.executeQuery();
       if (rs.next()) {
-       
+
         return loadFromResultSet(rs);
       } else {
         // throw new DAOException("Id not found:" + pId);
@@ -66,6 +66,29 @@ public class CustomerDAO implements BasicDAO<Customer> {
     }
   }
 
+  public Collection<Customer> findByName(String pName) {
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    List<Customer> result = new ArrayList<>();
+    try {
+      stmt = mConnection
+          .prepareStatement("SELECT ID,NAME,SSN,ADDRESS_ID,AGE,SEX FROM BANK.CUSTOMER WHERE UPPER(NAME) LIKE ?");
+      stmt.setString(1, pName.toUpperCase() + "%");
+      rs = stmt.executeQuery();
+      while (rs.next()) {
+
+        result.add(loadFromResultSet(rs));
+      }
+      return result;
+    } catch (SQLException e) {
+      throw new DAOException(e);
+    } finally {
+      SQLUtils.closeQuietly(rs, stmt);
+
+    }
+
+  }
+
   @Override
   public Collection<Customer> findAll() {
     PreparedStatement stmt = null;
@@ -75,7 +98,7 @@ public class CustomerDAO implements BasicDAO<Customer> {
       stmt = mConnection.prepareStatement("SELECT ID,NAME,SSN,ADDRESS_ID,AGE,SEX FROM BANK.CUSTOMER");
       rs = stmt.executeQuery();
       while (rs.next()) {
-     
+
         result.add(loadFromResultSet(rs));
       }
       return result;
@@ -144,6 +167,5 @@ public class CustomerDAO implements BasicDAO<Customer> {
     throw new DAOException("Not implemented!!!");
 
   }
-
 
 }

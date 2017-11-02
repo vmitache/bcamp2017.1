@@ -1,3 +1,4 @@
+package curs.banking.dao;
 
 
 import static org.junit.Assert.*;
