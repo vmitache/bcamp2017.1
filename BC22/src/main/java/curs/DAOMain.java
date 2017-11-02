@@ -10,6 +10,7 @@ import curs.banking.model.City;
 import curs.banking.model.Country;
 
 //TEST
+// https://github.com/vmitache/bcamp2017.1.git
 public class DAOMain {
   static final String DB_URL = "jdbc:h2:~/test;AUTO_SERVER=TRUE";
 
