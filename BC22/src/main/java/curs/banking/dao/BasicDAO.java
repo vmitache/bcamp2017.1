@@ -11,5 +11,7 @@ public interface BasicDAO<T> {
   T update(T pEntity);
   void delete(T pEntity);
   
-  <T> T loadFromResultSet(ResultSet pRS) throws SQLException; 
+  T loadFromResultSet(ResultSet pRS) throws SQLException; 
+  
+  
 }
