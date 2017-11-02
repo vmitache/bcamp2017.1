@@ -110,7 +110,7 @@ public class AccountDAO implements BasicDAO<Account> {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      stmt = mConnection.prepareStatement("INSERT INTO BANK.ACCOUNT(IBAN,BANK_ID,CUSTOMER_ID,AMOUNT,ACCOUNT_TYPE,CURRENCY_ID) VALUES(?,?,?,?,?,?,?)",
+      stmt = mConnection.prepareStatement("INSERT INTO BANK.ACCOUNT(IBAN,BANK_ID,CUSTOMER_ID,AMOUNT,ACCOUNT_TYPE,CURRENCY_ID) VALUES(?,?,?,?,?,?)",
           Statement.RETURN_GENERATED_KEYS);
       stmt.setString(1, pEntity.getIBAN());
       stmt.setLong(2, pEntity.getBank().getId());
@@ -137,13 +137,25 @@ public class AccountDAO implements BasicDAO<Account> {
 
   @Override
   public Account update(Account pEntity) {
-    // TODO Auto-generated method stub
-    return null;
+    PreparedStatement stmt = null;
+    ResultSet rs = null;
+    try {
+      stmt = mConnection.prepareStatement("UPDATE BANK.ACCOUNT SET AMOUNT=? WHERE ID=?");
+      stmt.setDouble(1, pEntity.getAmount());
+      stmt.setLong(2, pEntity.getId());
+      stmt.executeUpdate();
+      return findById(pEntity.getId());
+    } catch (SQLException e) {
+      throw new DAOException(e);
+    } finally {
+      SQLUtils.closeQuietly(rs, stmt);
+
+    }
   }
 
   @Override
   public void delete(Account pEntity) {
-    // TODO Auto-generated method stub
+    throw new DAOException("Not implemented!!!");
 
   }
 
