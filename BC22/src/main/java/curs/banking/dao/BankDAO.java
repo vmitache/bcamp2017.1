@@ -20,6 +20,24 @@ public class BankDAO implements BasicDAO<Bank> {
     mConnection = pConnection;
     mAddressDAO = new AddressDAO(pConnection);
   }
+  
+  @Override
+  public Bank loadFromResultSet(ResultSet pRS) throws SQLException {
+    Bank bank = new Bank();
+    long id = pRS.getLong(1);
+    String name = pRS.getString(2);
+    long addressId = pRS.getLong(3);
+    if (!pRS.wasNull()) {
+      bank.setAdress(mAddressDAO.findById(addressId));
+    }
+    String fc = pRS.getString(4);
+
+    bank.setId(id);
+    bank.setName(name);
+    bank.setFiscalCode(fc);
+    return bank;
+  }
+
 
   @Override
   public Bank findById(long pId) {
@@ -30,19 +48,8 @@ public class BankDAO implements BasicDAO<Bank> {
       stmt.setLong(1, pId);
       rs = stmt.executeQuery();
       if (rs.next()) {
-        Bank bank = new Bank();
-        long id = rs.getLong(1);
-        String name = rs.getString(2);
-        long addressId = rs.getLong(3);
-        if (!rs.wasNull()) {
-          bank.setAdress(mAddressDAO.findById(addressId));
-        }
-        String fc = rs.getString(4);
-
-        bank.setId(id);
-        bank.setName(name);
-        bank.setFiscalCode(fc);
-        return bank;
+       
+        return loadFromResultSet(rs);
       } else {
         // throw new DAOException("Id not found:" + pId);
         return null;
@@ -63,19 +70,8 @@ public class BankDAO implements BasicDAO<Bank> {
       stmt = mConnection.prepareStatement("SELECT ID,NAME,ADDRESS_ID,FISCAL_CODE FROM BANK.BANK");
       rs = stmt.executeQuery();
       while (rs.next()) {
-        Bank bank = new Bank();
-        long id = rs.getLong(1);
-        String name = rs.getString(2);
-        long addressId = rs.getLong(3);
-        if (!rs.wasNull()) {
-          bank.setAdress(mAddressDAO.findById(addressId));
-        }
-        String fc = rs.getString(4);
-
-        bank.setId(id);
-        bank.setName(name);
-        bank.setFiscalCode(fc);
-        result.add(bank);
+ 
+        result.add(loadFromResultSet(rs));
       }
       return result;
     } catch (SQLException e) {
@@ -138,4 +134,5 @@ public class BankDAO implements BasicDAO<Bank> {
 
   }
 
+ 
 }

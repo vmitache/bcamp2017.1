@@ -21,6 +21,20 @@ public class CityDAO implements BasicDAO<City> {
   }
 
   @Override
+  public City loadFromResultSet(ResultSet pRS) throws SQLException {
+    City c = new City();
+    long id = pRS.getLong(1);
+    String name = pRS.getString(2);
+    long countryId = pRS.getLong(3);
+    if (!pRS.wasNull()) {
+      c.setCountry(mCountryDAO.findById(countryId));
+    }
+    c.setId(id);
+    c.setName(name);
+    return c;
+  }
+
+  @Override
   public City findById(long pId) {
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -29,16 +43,8 @@ public class CityDAO implements BasicDAO<City> {
       stmt.setLong(1, pId);
       rs = stmt.executeQuery();
       if (rs.next()) {
-        City c = new City();
-        long id = rs.getLong(1);
-        String name = rs.getString(2);
-        long countryId = rs.getLong(3);
-        if (!rs.wasNull()) {
-          c.setCountry(mCountryDAO.findById(countryId));
-        }
-        c.setId(id);
-        c.setName(name);
-        return c;
+        
+        return loadFromResultSet(rs);
       } else {
         // throw new DAOException("Id not found:" + pId);
         return null;
@@ -59,16 +65,8 @@ public class CityDAO implements BasicDAO<City> {
       stmt = mConnection.prepareStatement("SELECT ID,NAME,COUNTRY_ID FROM BANK.CITY");
       rs = stmt.executeQuery();
       while (rs.next()) {
-        long id = rs.getLong(1);
-        String name = rs.getString(2);
-        City c = new City();
-        c.setId(id);
-        c.setName(name);
-        long countryId = rs.getLong(3);
-        if (!rs.wasNull()) {
-          c.setCountry(mCountryDAO.findById(countryId));
-        }
-        result.add(c);
+      
+        result.add(loadFromResultSet(rs));
       }
       return result;
     } catch (SQLException e) {

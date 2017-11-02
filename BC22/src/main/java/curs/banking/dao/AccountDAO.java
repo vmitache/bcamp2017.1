@@ -26,7 +26,7 @@ public class AccountDAO implements BasicDAO<Account> {
   }
 
   // ResultSet pRS pozitionat pe randul necesar !!!!
-  protected Account loadFromResultSet(ResultSet pRS) throws SQLException {
+  public Account loadFromResultSet(ResultSet pRS) throws SQLException {
     Account account = new Account();
     account.setId(pRS.getLong(1));
     account.setIBAN(pRS.getString(2));

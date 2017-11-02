@@ -18,6 +18,13 @@ public class CountryDAO implements BasicDAO<Country> {
   public CountryDAO(Connection pConnection) {
     mConnection = pConnection;
   }
+  
+  @Override
+  public Country loadFromResultSet(ResultSet pRS) throws SQLException {
+    long id = pRS.getLong(1);
+    String name = pRS.getString(2);
+    return new Country(id, name);  }
+
 
   @Override
   public Country findById(long pId) {
@@ -28,9 +35,8 @@ public class CountryDAO implements BasicDAO<Country> {
       stmt.setLong(1, pId);
       rs = stmt.executeQuery();
       if (rs.next()) {
-        long id = rs.getLong(1);
-        String name = rs.getString(2);
-        return new Country(id, name);
+       
+        return loadFromResultSet(rs);
       } else {
         // throw new DAOException("Id not found:" + pId);
         return null;
@@ -50,9 +56,8 @@ public class CountryDAO implements BasicDAO<Country> {
       stmt.setString(1, pName.trim().toUpperCase());
       rs = stmt.executeQuery();
       if (rs.next()) {
-        long id = rs.getLong(1);
-        String name = rs.getString(2);
-        return new Country(id, name);
+        
+        return loadFromResultSet(rs);
       } else {
         // throw new DAOException("Id not found:" + pId);
         return null;
@@ -73,9 +78,8 @@ public class CountryDAO implements BasicDAO<Country> {
       stmt = mConnection.prepareStatement("SELECT ID,NAME FROM BANK.COUNTRY");
       rs = stmt.executeQuery();
       while (rs.next()) {
-        long id = rs.getLong(1);
-        String name = rs.getString(2);
-        result.add(new Country(id, name));
+        
+        result.add(loadFromResultSet(rs));
       }
       return result;
     } catch (SQLException e) {
@@ -128,5 +132,6 @@ public class CountryDAO implements BasicDAO<Country> {
   public void delete(Country pEntity) {
     throw new DAOException("Not implemented!!!");
   }
+
 
 }

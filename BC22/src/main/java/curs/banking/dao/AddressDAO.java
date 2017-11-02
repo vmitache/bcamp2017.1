@@ -20,6 +20,22 @@ public class AddressDAO implements BasicDAO<Address> {
     mConnection = pConn;
     mCityDAO = new CityDAO(pConn);
   }
+  
+  @Override
+  public Address loadFromResultSet(ResultSet pRS) throws SQLException {
+    long id = pRS.getLong(1);
+    long cityId = pRS.getLong(2);
+    String street = pRS.getString(3);
+    String number = pRS.getString(4);
+    String pc = pRS.getString(5);
+    Address addr = new Address();
+    addr.setId(id);
+    addr.setCity(mCityDAO.findById(cityId));
+    addr.setStreet(street);
+    addr.setNumber(number);
+    addr.setPostalCode(pc);
+    return addr;
+  }
 
   @Override
   public Address findById(long pId) {
@@ -30,18 +46,8 @@ public class AddressDAO implements BasicDAO<Address> {
       stmt.setLong(1, pId);
       rs = stmt.executeQuery();
       if (rs.next()) {
-        long id = rs.getLong(1);
-        long cityId = rs.getLong(2);
-        String street = rs.getString(3);
-        String number = rs.getString(4);
-        String pc = rs.getString(5);
-        Address addr = new Address();
-        addr.setId(id);
-        addr.setCity(mCityDAO.findById(cityId));
-        addr.setStreet(street);
-        addr.setNumber(number);
-        addr.setPostalCode(pc);
-        return addr;
+       
+        return loadFromResultSet(rs);
       } else {
         // throw new DAOException("Id not found:" + pId);
         return null;
@@ -62,18 +68,8 @@ public class AddressDAO implements BasicDAO<Address> {
       stmt = mConnection.prepareStatement("SELECT ID,CITY_ID,STREET,NUMBER,POSTAL_CODE FROM BANK.ADDRESS");
       rs = stmt.executeQuery();
       while (rs.next()) {
-        long id = rs.getLong(1);
-        long cityId = rs.getLong(2);
-        String street = rs.getString(3);
-        String number = rs.getString(4);
-        String pc = rs.getString(5);
-        Address addr = new Address();
-        addr.setId(id);
-        addr.setCity(mCityDAO.findById(cityId));
-        addr.setStreet(street);
-        addr.setNumber(number);
-        addr.setPostalCode(pc);
-        result.add(addr);
+       
+        result.add(loadFromResultSet(rs));
       }
       return result;
     } catch (SQLException e) {
@@ -136,5 +132,7 @@ public class AddressDAO implements BasicDAO<Address> {
     throw new DAOException("Not implemented!!!");
 
   }
+
+ 
 
 }

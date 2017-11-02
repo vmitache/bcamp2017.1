@@ -24,6 +24,27 @@ public class CustomerDAO implements BasicDAO<Customer> {
   }
 
   @Override
+  public Customer loadFromResultSet(ResultSet pRS) throws SQLException {
+    Customer cust = new Customer();
+    long id = pRS.getLong(1);
+    String name = pRS.getString(2);
+    String ssn = pRS.getString(3);
+    long addressId = pRS.getLong(4);
+    if (!pRS.wasNull()) {
+      cust.setAddress(mAddressDAO.findById(addressId));
+    }
+    int age = pRS.getInt(5);
+    String sex = pRS.getString(6);
+
+    cust.setId(id);
+    cust.setName(name);
+    cust.setSSN(ssn);
+    cust.setVarsta(age);
+    cust.setSex("M".equals(sex) ? SexEnum.M : SexEnum.F);
+    return cust;
+  }
+
+  @Override
   public Customer findById(long pId) {
     PreparedStatement stmt = null;
     ResultSet rs = null;
@@ -32,23 +53,8 @@ public class CustomerDAO implements BasicDAO<Customer> {
       stmt.setLong(1, pId);
       rs = stmt.executeQuery();
       if (rs.next()) {
-        Customer cust = new Customer();
-        long id = rs.getLong(1);
-        String name = rs.getString(2);
-        String ssn = rs.getString(3);
-        long addressId = rs.getLong(4);
-        if (!rs.wasNull()) {
-          cust.setAddress(mAddressDAO.findById(addressId));
-        }
-        int age = rs.getInt(5);
-        String sex = rs.getString(6);
-
-        cust.setId(id);
-        cust.setName(name);
-        cust.setSSN(ssn);
-        cust.setVarsta(age);
-        cust.setSex("M".equals(sex) ? SexEnum.M : SexEnum.F);
-        return cust;
+       
+        return loadFromResultSet(rs);
       } else {
         // throw new DAOException("Id not found:" + pId);
         return null;
@@ -69,23 +75,8 @@ public class CustomerDAO implements BasicDAO<Customer> {
       stmt = mConnection.prepareStatement("SELECT ID,NAME,SSN,ADDRESS_ID,AGE,SEX FROM BANK.CUSTOMER");
       rs = stmt.executeQuery();
       while (rs.next()) {
-        Customer cust = new Customer();
-        long id = rs.getLong(1);
-        String name = rs.getString(2);
-        String ssn = rs.getString(3);
-        long addressId = rs.getLong(4);
-        if (!rs.wasNull()) {
-          cust.setAddress(mAddressDAO.findById(addressId));
-        }
-        int age = rs.getInt(5);
-        String sex = rs.getString(6);
-
-        cust.setId(id);
-        cust.setName(name);
-        cust.setSSN(ssn);
-        cust.setVarsta(age);
-        cust.setSex("M".equals(sex) ? SexEnum.M : SexEnum.F);
-        result.add(cust);
+     
+        result.add(loadFromResultSet(rs));
       }
       return result;
     } catch (SQLException e) {
@@ -153,5 +144,6 @@ public class CustomerDAO implements BasicDAO<Customer> {
     throw new DAOException("Not implemented!!!");
 
   }
+
 
 }
