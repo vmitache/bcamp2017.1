@@ -61,5 +61,6 @@ INSERT INTO bank.customer(name,address_id,sex) VALUES('Ionescu Ana',3,'F');
 INSERT INTO bank.account(iban,bank_id,customer_id,amount,account_type,currency_id) VALUES('RNCB0101010101101', 1, 1, 100.50, 'DEBIT', 1);
 INSERT INTO bank.account(iban,bank_id,customer_id,amount,account_type,currency_id) VALUES('RNCB020202020202', 1, 1, 11, 'SAVINGS', 2);
 INSERT INTO bank.account(iban,bank_id,customer_id,amount,account_type,currency_id) VALUES('RNCB01030303030303', 1, 2, 314.14, 'DEBIT', 1);
+INSERT INTO bank.account(iban,bank_id,customer_id,amount,account_type,currency_id) VALUES('RNCB01030303030404', 1, 2, 314.14, 'DEBIT', 2);
 
 
