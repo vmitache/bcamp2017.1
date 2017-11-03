@@ -34,8 +34,8 @@ public class CustomerService {
   static final String DB_URL = "jdbc:h2:~/test;AUTO_SERVER=TRUE";
 
   public Connection getConnection() throws Exception {
-    // return DriverManager.getConnection(DB_URL, "SA", "");
-    return mThreadConn.get();
+    return DriverManager.getConnection(DB_URL, "SA", "");
+    //return mThreadConn.get();
   }
   // SE DAU
   // ACCOUNT1 - findById (1)

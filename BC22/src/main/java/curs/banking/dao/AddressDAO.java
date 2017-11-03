@@ -12,17 +12,16 @@ import java.util.List;
 import curs.banking.model.Address;
 import curs.banking.model.City;
 
-public class AddressDAO implements BasicDAO<Address> {
-  protected Connection mConnection;
+public class AddressDAO extends AbstractBaseDAO<Address> {
   private CityDAO mCityDAO;
 
   public AddressDAO(Connection pConn) {
-    mConnection = pConn;
+    super(pConn);
     mCityDAO = new CityDAO(pConn);
   }
-  
+
   @Override
-  public Address loadFromResultSet(ResultSet pRS) throws SQLException {
+  protected Address loadFromResultSet(ResultSet pRS) throws SQLException {
     long id = pRS.getLong(1);
     long cityId = pRS.getLong(2);
     String street = pRS.getString(3);
@@ -38,45 +37,8 @@ public class AddressDAO implements BasicDAO<Address> {
   }
 
   @Override
-  public Address findById(long pId) {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = mConnection.prepareStatement("SELECT ID,CITY_ID,STREET,NUMBER,POSTAL_CODE FROM BANK.ADDRESS WHERE ID=?");
-      stmt.setLong(1, pId);
-      rs = stmt.executeQuery();
-      if (rs.next()) {
-       
-        return loadFromResultSet(rs);
-      } else {
-        // throw new DAOException("Id not found:" + pId);
-        return null;
-      }
-    } catch (SQLException e) {
-      throw new DAOException(e);
-    } finally {
-      SQLUtils.closeQuietly(rs, stmt);
-    }
-  }
-
-  @Override
-  public Collection<Address> findAll() {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    List<Address> result = new ArrayList<>();
-    try {
-      stmt = mConnection.prepareStatement("SELECT ID,CITY_ID,STREET,NUMBER,POSTAL_CODE FROM BANK.ADDRESS");
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-       
-        result.add(loadFromResultSet(rs));
-      }
-      return result;
-    } catch (SQLException e) {
-      throw new DAOException(e);
-    } finally {
-      SQLUtils.closeQuietly(rs, stmt);
-    }
+  protected String getSQLForFindAll() {
+    return "SELECT ID,CITY_ID,STREET,NUMBER,POSTAL_CODE FROM BANK.ADDRESS";
   }
 
   @Override
@@ -132,7 +94,5 @@ public class AddressDAO implements BasicDAO<Address> {
     throw new DAOException("Not implemented!!!");
 
   }
-
- 
 
 }

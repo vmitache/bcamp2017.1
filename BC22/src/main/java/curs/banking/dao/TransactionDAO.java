@@ -14,12 +14,11 @@ import curs.banking.model.SexEnum;
 import curs.banking.model.Transaction;
 import curs.banking.model.TransactionType;
 
-public class TransactionDAO implements BasicDAO<Transaction> {
-  protected Connection mConnection;
+public class TransactionDAO extends AbstractBaseDAO<Transaction> {
   private AccountDAO mAccountDAO;
 
   @Override
-  public Transaction loadFromResultSet(ResultSet pRS) throws SQLException {
+  protected Transaction loadFromResultSet(ResultSet pRS) throws SQLException {
     Transaction trans = new Transaction();
     trans.setId(pRS.getLong(1));
     long accId = pRS.getLong(2);
@@ -34,52 +33,14 @@ public class TransactionDAO implements BasicDAO<Transaction> {
     return trans;
   }
 
+  @Override
+  protected String getSQLForFindAll() {
+    return "SELECT ID,ACCOUNT_ID,TTYPE,AMOUNT,TTIME FROM BANK.TRANSACTION";
+  }
+
   public TransactionDAO(Connection pConnection) {
-    mConnection = pConnection;
+    super(pConnection);
     mAccountDAO = new AccountDAO(mConnection);
-  }
-
-  @Override
-  public Transaction findById(long pId) {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = mConnection.prepareStatement("SELECT ID,ACCOUNT_ID,TTYPE,AMOUNT,TTIME FROM BANK.TRANSACTION WHERE ID=?");
-      stmt.setLong(1, pId);
-      rs = stmt.executeQuery();
-      if (rs.next()) {
-
-        return loadFromResultSet(rs);
-      } else {
-        // throw new DAOException("Id not found:" + pId);
-        return null;
-      }
-    } catch (SQLException e) {
-      throw new DAOException(e);
-    } finally {
-      SQLUtils.closeQuietly(rs, stmt);
-    }
-  }
-
-  @Override
-  public Collection<Transaction> findAll() {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    List<Transaction> result = new ArrayList<>();
-    try {
-      stmt = mConnection.prepareStatement("SELECT ID,ACCOUNT_ID,TTYPE,AMOUNT,TTIME FROM BANK.TRANSACTION");
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-
-        result.add(loadFromResultSet(rs));
-      }
-      return result;
-    } catch (SQLException e) {
-      throw new DAOException(e);
-    } finally {
-      SQLUtils.closeQuietly(rs, stmt);
-
-    }
   }
 
   @Override

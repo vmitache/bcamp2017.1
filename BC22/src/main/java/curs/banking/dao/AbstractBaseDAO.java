@@ -14,8 +14,12 @@ import curs.banking.model.Customer;
 public abstract class AbstractBaseDAO<T> implements BasicDAO<T> {
   protected Connection mConnection;
   
-  protected abstract T loadFromResultSet1(ResultSet pRS) throws SQLException; 
+  protected abstract T loadFromResultSet(ResultSet pRS) throws SQLException; 
 
+  public AbstractBaseDAO(Connection pConnection) {
+    mConnection = pConnection;
+  }
+  
   @Override
   public Collection<T> findAll() {
     PreparedStatement stmt = null;

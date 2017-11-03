@@ -11,17 +11,16 @@ import java.util.List;
 
 import curs.banking.model.City;
 
-public class CityDAO implements BasicDAO<City> {
-  protected Connection mConnection;
+public class CityDAO extends AbstractBaseDAO<City> {
   private CountryDAO mCountryDAO;
 
   public CityDAO(Connection pConnection) {
-    mConnection = pConnection;
+    super(pConnection);
     mCountryDAO = new CountryDAO(pConnection);
   }
 
   @Override
-  public City loadFromResultSet(ResultSet pRS) throws SQLException {
+  protected City loadFromResultSet(ResultSet pRS) throws SQLException {
     City c = new City();
     long id = pRS.getLong(1);
     String name = pRS.getString(2);
@@ -35,46 +34,8 @@ public class CityDAO implements BasicDAO<City> {
   }
 
   @Override
-  public City findById(long pId) {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = mConnection.prepareStatement("SELECT ID,NAME,COUNTRY_ID FROM BANK.CITY WHERE ID=?");
-      stmt.setLong(1, pId);
-      rs = stmt.executeQuery();
-      if (rs.next()) {
-        
-        return loadFromResultSet(rs);
-      } else {
-        // throw new DAOException("Id not found:" + pId);
-        return null;
-      }
-    } catch (SQLException e) {
-      throw new DAOException(e);
-    } finally {
-      SQLUtils.closeQuietly(rs, stmt);
-    }
-  }
-
-  @Override
-  public Collection<City> findAll() {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    List<City> result = new ArrayList<>();
-    try {
-      stmt = mConnection.prepareStatement("SELECT ID,NAME,COUNTRY_ID FROM BANK.CITY");
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-      
-        result.add(loadFromResultSet(rs));
-      }
-      return result;
-    } catch (SQLException e) {
-      throw new DAOException(e);
-    } finally {
-      SQLUtils.closeQuietly(rs, stmt);
-
-    }
+  protected String getSQLForFindAll() {
+    return "SELECT ID,NAME,COUNTRY_ID FROM BANK.CITY";
   }
 
   /**

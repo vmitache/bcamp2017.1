@@ -12,40 +12,22 @@ import java.util.List;
 import curs.banking.model.Country;
 import static curs.banking.dao.SQLUtils.closeQuietly;
 
-public class CountryDAO implements BasicDAO<Country> {
-  protected Connection mConnection;
+public class CountryDAO extends AbstractBaseDAO<Country> {
 
   public CountryDAO(Connection pConnection) {
-    mConnection = pConnection;
+    super(pConnection);
   }
-  
+
   @Override
-  public Country loadFromResultSet(ResultSet pRS) throws SQLException {
+  protected Country loadFromResultSet(ResultSet pRS) throws SQLException {
     long id = pRS.getLong(1);
     String name = pRS.getString(2);
-    return new Country(id, name);  }
-
+    return new Country(id, name);
+  }
 
   @Override
-  public Country findById(long pId) {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = mConnection.prepareStatement("SELECT ID,NAME FROM BANK.COUNTRY WHERE ID=?");
-      stmt.setLong(1, pId);
-      rs = stmt.executeQuery();
-      if (rs.next()) {
-       
-        return loadFromResultSet(rs);
-      } else {
-        // throw new DAOException("Id not found:" + pId);
-        return null;
-      }
-    } catch (SQLException e) {
-      throw new DAOException(e);
-    } finally {
-      SQLUtils.closeQuietly(rs, stmt);
-    }
+  protected String getSQLForFindAll() {
+    return "SELECT ID,NAME FROM BANK.COUNTRY";
   }
 
   public Country findByName(String pName) {
@@ -56,32 +38,12 @@ public class CountryDAO implements BasicDAO<Country> {
       stmt.setString(1, pName.trim().toUpperCase());
       rs = stmt.executeQuery();
       if (rs.next()) {
-        
+
         return loadFromResultSet(rs);
       } else {
         // throw new DAOException("Id not found:" + pId);
         return null;
       }
-    } catch (SQLException e) {
-      throw new DAOException(e);
-    } finally {
-      closeQuietly(rs, stmt);
-    }
-  }
-  
-  @Override
-  public Collection<Country> findAll() {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    List<Country> result = new ArrayList<>();
-    try {
-      stmt = mConnection.prepareStatement("SELECT ID,NAME FROM BANK.COUNTRY");
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-        
-        result.add(loadFromResultSet(rs));
-      }
-      return result;
     } catch (SQLException e) {
       throw new DAOException(e);
     } finally {
@@ -132,6 +94,5 @@ public class CountryDAO implements BasicDAO<Country> {
   public void delete(Country pEntity) {
     throw new DAOException("Not implemented!!!");
   }
-
 
 }

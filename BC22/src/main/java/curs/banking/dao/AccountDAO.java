@@ -14,19 +14,19 @@ import curs.banking.model.AccountType;
 import curs.banking.model.Bank;
 import curs.banking.model.Currency;
 
-public class AccountDAO implements BasicDAO<Account> {
-  protected Connection mConnection;
+public class AccountDAO extends AbstractBaseDAO<Account> {
   private CustomerDAO mCustomerDAO;
   private BankDAO mBankDAO;
 
   public AccountDAO(Connection pConnection) {
-    mConnection = pConnection;
+    super(pConnection);
     mCustomerDAO = new CustomerDAO(pConnection);
     mBankDAO = new BankDAO(mConnection);
   }
 
   // ResultSet pRS pozitionat pe randul necesar !!!!
-  public Account loadFromResultSet(ResultSet pRS) throws SQLException {
+  @Override
+  protected Account loadFromResultSet(ResultSet pRS) throws SQLException {
     Account account = new Account();
     account.setId(pRS.getLong(1));
     account.setIBAN(pRS.getString(2));
@@ -62,47 +62,8 @@ public class AccountDAO implements BasicDAO<Account> {
   }
 
   @Override
-  public Account findById(long pId) {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    try {
-      stmt = mConnection.prepareStatement(
-          "SELECT ID,IBAN,BANK_ID,CUSTOMER_ID,AMOUNT,ACCOUNT_TYPE,CURRENCY_ID FROM BANK.ACCOUNT WHERE ID=?");
-      stmt.setLong(1, pId);
-      rs = stmt.executeQuery();
-      if (rs.next()) {
-        return loadFromResultSet(rs);
-      } else {
-        // throw new DAOException("Id not found:" + pId);
-        return null;
-      }
-    } catch (SQLException e) {
-      throw new DAOException(e);
-    } finally {
-      SQLUtils.closeQuietly(rs, stmt);
-    }
-  }
-
-  @Override
-  public Collection<Account> findAll() {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-    List<Account> result = new ArrayList<>();
-    try {
-      stmt = mConnection
-          .prepareStatement("SELECT ID,IBAN,BANK_ID,CUSTOMER_ID,AMOUNT,ACCOUNT_TYPE,CURRENCY_ID FROM BANK.ACCOUNT");
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-        result.add(loadFromResultSet(rs));
-      }
-      return result;
-    } catch (SQLException e) {
-      throw new DAOException(e);
-    } finally {
-      SQLUtils.closeQuietly(rs, stmt);
-
-    }
-
+  protected String getSQLForFindAll() {
+    return "SELECT ID,IBAN,BANK_ID,CUSTOMER_ID,AMOUNT,ACCOUNT_TYPE,CURRENCY_ID FROM BANK.ACCOUNT";
   }
 
   @Override
@@ -110,7 +71,8 @@ public class AccountDAO implements BasicDAO<Account> {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      stmt = mConnection.prepareStatement("INSERT INTO BANK.ACCOUNT(IBAN,BANK_ID,CUSTOMER_ID,AMOUNT,ACCOUNT_TYPE,CURRENCY_ID) VALUES(?,?,?,?,?,?)",
+      stmt = mConnection.prepareStatement(
+          "INSERT INTO BANK.ACCOUNT(IBAN,BANK_ID,CUSTOMER_ID,AMOUNT,ACCOUNT_TYPE,CURRENCY_ID) VALUES(?,?,?,?,?,?)",
           Statement.RETURN_GENERATED_KEYS);
       stmt.setString(1, pEntity.getIBAN());
       stmt.setLong(2, pEntity.getBank().getId());
